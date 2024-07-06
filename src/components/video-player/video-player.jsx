@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import './CustomVideoPlayer.css';
+import './video-player.css';
 
 const CustomVideoPlayer = ({ src }) => {
   const videoRef = useRef(null);
@@ -38,6 +38,7 @@ const CustomVideoPlayer = ({ src }) => {
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
         className="video"
+        controls
       />
       <div className="controls">
         <button onClick={togglePlayPause}>

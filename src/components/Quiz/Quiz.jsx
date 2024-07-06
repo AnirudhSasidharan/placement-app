@@ -1,23 +1,7 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useEffect } from 'react';
 import { collection, getDocs, query } from "firebase/firestore";
-import { db } from "../../firebase"
-import './Quiz.css'
-
-
-const q = query(collection(db, "questions"));
-const querySnapshot = await getDocs(q);
-const allDocs = querySnapshot.docs;
-const shuffledDocs = shuffleArray(allDocs);
-
-const selectedDocs = shuffledDocs.slice(0, 5);
-const data = selectedDocs.map(doc => ({
-  question: doc.data().question,
-  option1: doc.data().option1,
-  option2: doc.data().option2,
-  option3: doc.data().option3,
-  option4: doc.data().option4,
-  ans: doc.data().ans,
-}));
+import { db } from "../../firebase";
+import './Quiz.css';
 
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
@@ -27,100 +11,103 @@ function shuffleArray(array) {
   return array;
 }
 
- 
-const Quiz = () => {
-  let[index,setIndex]=useState(0);
-  let[question,setQuestion]=useState(data[index]);
-  let[lock,setLock]=useState(false);
-  let[score,setScore]=useState(0);
-  let[result,setResult]=useState(false);
- 
+const Quiz = ({ onComplete }) => {
+  const [index, setIndex] = useState(0);
+  const [question, setQuestion] = useState(null);
+  const [lock, setLock] = useState(false);
+  const [score, setScore] = useState(0);
+  const [result, setResult] = useState(false);
+  const [data, setData] = useState([]);
+  
+  const Option1 = useRef(null);
+  const Option2 = useRef(null);
+  const Option3 = useRef(null);
+  const Option4 = useRef(null);
 
-  let Option1 = useRef(null);
-  let Option2 = useRef(null);
-  let Option3 = useRef(null);
-  let Option4 = useRef(null);
+  const option_array = [Option1, Option2, Option3, Option4];
 
-  let option_array=[Option1,Option2,Option3,Option4];
+  useEffect(() => {
+    const fetchData = async () => {
+      const q = query(collection(db, "questions"));
+      const querySnapshot = await getDocs(q);
+      const allDocs = querySnapshot.docs;
+      const shuffledDocs = shuffleArray(allDocs);
 
+      const selectedDocs = shuffledDocs.slice(0, 5);
+      const questions = selectedDocs.map(doc => ({
+        question: doc.data().question,
+        option1: doc.data().option1,
+        option2: doc.data().option2,
+        option3: doc.data().option3,
+        option4: doc.data().option4,
+        ans: doc.data().ans,
+      }));
 
-  const checkAns=(e,ans)=>{
-    if(lock===false){
-      if(question.ans==ans){
-        e.target.classList.add("correct"); 
-        setLock(true);
-        setScore(prev=>prev+1);
-        
-        }
-      else{
+      setData(questions);
+      setQuestion(questions[0]);
+    };
+
+    fetchData();
+  }, []);
+
+  const checkAns = (e, ans) => {
+    if (!lock) {
+      if (question.ans === ans) {
+        e.target.classList.add("correct");
+        setScore(prev => prev + 1);
+      } else {
         e.target.classList.add("wrong");
-        setLock(true);
-        option_array[question.ans-1].current.classList.add("correct");
-        
+        option_array[question.ans - 1].current.classList.add("correct");
+      }
+      setLock(true);
+    }
+  };
+
+  const next = () => {
+    if (lock) {
+      if (index === data.length - 1) {
+        setResult(true);
+        onComplete(score); // Call the onComplete function passed as a prop
+      } else {
+        setIndex(prev => prev + 1);
+        setQuestion(data[index + 1]);
+        setLock(false);
+        option_array.forEach(option => {
+          option.current.classList.remove("wrong");
+          option.current.classList.remove("correct");
+        });
       }
     }
+  };
+
+  if (!question) {
+    return <div>Loading...</div>;
   }
 
-  const next=()=>{
-    if(lock===true){
-      if(index===data.length-1){
-        setResult(true);
-        return 0;
-      }
-      setIndex(++index);
-      setQuestion(data[index]);
-      setLock(false);
-      option_array.map((option)=>{
-        option.current.classList.remove("wrong");
-        option.current.classList.remove("correct");
-        return null;
-      })
-    }
-  }
-  const Back =()=>{
-   // window.location.href = 'https://www.youtube.com/watch?v=6LFjVC3cHjI';
-  }
   return (
     <div className='container'>
-        <h1>Grammar</h1>
-        <hr/>
-        {result?<></>:<>
-        <h2>{index+1}.{question.question}</h2>
-        <ul>
-            <li ref={Option1} onClick={(e)=>{checkAns(e,1)}}>{question.option1}</li>
-            <li ref={Option2} onClick={(e)=>{checkAns(e,2)}}>{question.option2}</li>
-            <li ref={Option3} onClick={(e)=>{checkAns(e,3)}}>{question.option3}</li>
-            <li ref={Option4} onClick={(e)=>{checkAns(e,4)}}>{question.option4}</li>
-        </ul>
-        <button onClick={next}>Next</button>
-        <div className="index">{index+1} of {data.length}</div>
-        </>}
-        {result && (
+      <h1>Grammar</h1>
+      <hr/>
+      {!result ? (
         <>
-          {score <= 2 && (
-            <a href="https://www.youtube.com/watch?v=6LFjVC3cHjI">Your score is low. Suggested video for Basic level</a>
-          )}
-          {score >= 3 && score <= 4 && (
-            <a href="https://www.youtube.com/watch?v=NxzuC46mTm0&t=205s">Good,Suggested video for Intermediate level</a>
-          )}
-          {score === 5 && (
-            <a href="https://www.youtube.com/watch?v=BaX7xwa8Vh4">Congratulations! You've achieved a perfect score,Suggested video for Advanced level</a>
-          )}
+          <h2>{index + 1}. {question.question}</h2>
+          <ul>
+            <li ref={Option1} onClick={(e) => checkAns(e, 1)}>{question.option1}</li>
+            <li ref={Option2} onClick={(e) => checkAns(e, 2)}>{question.option2}</li>
+            <li ref={Option3} onClick={(e) => checkAns(e, 3)}>{question.option3}</li>
+            <li ref={Option4} onClick={(e) => checkAns(e, 4)}>{question.option4}</li>
+          </ul>
+          <button onClick={next}>Next</button>
+          <div className="index">{index + 1} of {data.length}</div>
+        </>
+      ) : (
+        <>
+          <h3>Score is {score} out of {data.length}</h3>
+          <button onClick={() => onComplete(score)}>View Suggested Video</button>
         </>
       )}
-      {result === true && <>
-         <h3>Score is {score} out of {data.length}</h3>
-         
-      
-      <button onClick={Back}>Back</button>
-      </>}
-      
-        
-      
     </div>
   );
-} ;
+};
 
-
-export default Quiz
-
+export default Quiz;
