@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react'
 import { collection, getDocs, query } from "firebase/firestore";
-import { db } from "../firebase"
+import { db } from "../../firebase"
 import './Quiz.css'
 
 
@@ -101,18 +101,19 @@ const Quiz = () => {
             <a href="https://www.youtube.com/watch?v=6LFjVC3cHjI">Your score is low. Suggested video for Basic level</a>
           )}
           {score >= 3 && score <= 4 && (
-            <a href="https://www.youtube.com/watch?v=NxzuC46mTm0&t=205s">GoodSuggested video for Intermediate level</a>
+            <a href="https://www.youtube.com/watch?v=NxzuC46mTm0&t=205s">Good,Suggested video for Intermediate level</a>
           )}
           {score === 5 && (
             <a href="https://www.youtube.com/watch?v=BaX7xwa8Vh4">Congratulations! You've achieved a perfect score,Suggested video for Advanced level</a>
           )}
         </>
       )}
+      {result === true && <>
          <h3>Score is {score} out of {data.length}</h3>
          
       
       <button onClick={Back}>Back</button>
-        
+      </>}
       
         
       
