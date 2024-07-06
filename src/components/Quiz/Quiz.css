@@ -1,6 +1,9 @@
 .container {
   text-align: center;
   margin: 20px;
+  width:auto;
+  height:auto;
+  
 }
 
 ul {

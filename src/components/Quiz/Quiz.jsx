@@ -67,7 +67,7 @@ const Quiz = ({ onComplete }) => {
     if (lock) {
       if (index === data.length - 1) {
         setResult(true);
-        onComplete(score); // Call the onComplete function passed as a prop
+        onComplete(score); 
       } else {
         setIndex(prev => prev + 1);
         setQuestion(data[index + 1]);

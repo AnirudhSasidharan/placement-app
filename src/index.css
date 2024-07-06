@@ -1,7 +1,15 @@
-*{
-    margin:0;
-    padding:0;
-}
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+  }
+  
+  #root {
+    height: 100%;
+    width: 100%;
+  }
 body{
     height:100vh;
     background-image:linear-gradient(#ffecc7,#f7a22a);
