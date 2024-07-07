@@ -104,7 +104,7 @@ const Quiz = ({ onComplete }) => {
         <>
           <h3>Quiz Completed!</h3>
           <h3>Score: {score} out of {data.length}</h3>
-          <button onClick={() => onComplete(score)}>View Suggested Video</button>
+          <h3>This is the suggested video:</h3>
         </>
       )}
     </div>
