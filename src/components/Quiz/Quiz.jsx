@@ -18,7 +18,7 @@ const Quiz = ({ onComplete }) => {
   const [score, setScore] = useState(0);
   const [result, setResult] = useState(false);
   const [data, setData] = useState([]);
-  
+
   const Option1 = useRef(null);
   const Option2 = useRef(null);
   const Option3 = useRef(null);
@@ -34,7 +34,7 @@ const Quiz = ({ onComplete }) => {
       const shuffledDocs = shuffleArray(allDocs);
 
       const selectedDocs = shuffledDocs.slice(0, 5);
-      const questions = selectedDocs.map(doc => ({
+      const questions = selectedDocs.map((doc) => ({
         question: doc.data().question,
         option1: doc.data().option1,
         option2: doc.data().option2,
@@ -54,7 +54,7 @@ const Quiz = ({ onComplete }) => {
     if (!lock) {
       if (question.ans === ans) {
         e.target.classList.add("correct");
-        setScore(prev => prev + 1);
+        setScore((prev) => prev + 1);
       } else {
         e.target.classList.add("wrong");
         option_array[question.ans - 1].current.classList.add("correct");
@@ -102,7 +102,8 @@ const Quiz = ({ onComplete }) => {
         </>
       ) : (
         <>
-          <h3>Score is {score} out of {data.length}</h3>
+          <h3>Quiz Completed!</h3>
+          <h3>Score: {score} out of {data.length}</h3>
           <button onClick={() => onComplete(score)}>View Suggested Video</button>
         </>
       )}

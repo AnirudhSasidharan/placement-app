@@ -1,22 +1,28 @@
 import React, { useState } from 'react';
+import { collection, query, getDocs } from 'firebase/firestore';
 import Quiz from './components/Quiz/Quiz';
 import CustomVideoPlayer from './components/video-player/video-player';
+import { db } from './firebase';
 import './App.css';
+import { shuffleArray } from './utils'; // Ensure you have this utility function
 
 const App = () => {
   const [showQuiz, setShowQuiz] = useState(true);
-  const [videoSrc, setVideoSrc] = useState('');
+  const [videoSrc, setVideoSrc] = useState([]);
 
-  const handleQuizComplete = (score) => {
-    let videoUrl = '';
-    if (score <= 2) {
-      videoUrl = 'https://www.youtube.com/watch?v=6LFjVC3cHjI';
-    } else if (score >= 3 && score <= 4) {
-      videoUrl = 'https://www.youtube.com/watch?v=NxzuC46mTm0&t=205s';
-    } else if (score === 5) {
-      videoUrl = 'https://www.youtube.com/watch?v=BaX7xwa8Vh4';
-    }
-    setVideoSrc(videoUrl);
+  const fetchData = async () => {
+    const q = query(collection(db, "video-links"));
+    const querySnapshot = await getDocs(q);
+    const allDocs = querySnapshot.docs;
+    const shuffledDocs = shuffleArray(allDocs);
+    const selectedDocs = shuffledDocs.slice(0, 2);
+    const videoLinks = selectedDocs.map((doc) => doc.data().link);
+
+    setVideoSrc(videoLinks);
+  };
+
+  const handleQuizComplete = async (score) => {
+    await fetchData();
     setShowQuiz(false);
   };
 

@@ -2,7 +2,6 @@ import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { doc, setDoc } from "firebase/firestore";
 
-
 const firebaseConfig = {
   apiKey: "AIzaSyBIUtN5vudbgGv-ETuk05aK_o3PpoQZ43A",
   authDomain: "project-b2e3d.firebaseapp.com",

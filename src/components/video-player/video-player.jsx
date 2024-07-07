@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React from 'react';
 import './video-player.css';
 import ReactPlayer from 'react-player/lazy'
 
